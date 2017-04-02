@@ -43,35 +43,37 @@ public class MainActivity extends AppCompatActivity {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String eventArray = null;
+                String eventArray = null; //Json Array를 String으로 저장하기 위한 변수 선언
                 try {
-                    eventArray = loadHtml();
+                    eventArray = loadHtml(); //loadHtml()는 Json Array를 파싱해서 String으로 가져오는 함수라 가정
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 System.out.println("결과물 : " + eventArray);
                 try {
-                    JSONArray array = new JSONArray(eventArray); //[]
-                    list_cnt = array.length();
-                    System.out.println("list_cnt " + list_cnt);
+                    JSONArray array = new JSONArray(eventArray); //JSONArray형식으로 파싱하기 위해 새로 선언해주며 eventArray를 집어 넣어준다.
+                    list_cnt = array.length(); //Json 배열 개수를 가져옴
 
-                    getDescription = new String[list_cnt];
-                    getLink = new String[list_cnt];
-                    getImageUrl = new String[list_cnt];
+                    //key의 value를 가져와 저장하기 위한 배열을 생성한다
+                    getDescription = new String[list_cnt]; //decription 저장용
+                    getLink = new String[list_cnt]; //link 저장용
+                    getImageUrl = new String[list_cnt]; //imageUrl 저장용
+
+                    for (int i = 0; i < list_cnt; i++) { //JSONArray 내 json 개수만큼 for문 동작
+
+                        JSONObject jsonObject = array.getJSONObject(i); //i번째 Json데이터를 가져옴
+                        getDescription[i] = jsonObject.getString("description");  //descripton 값을 배열에 저장
+                        getLink[i] = jsonObject.getString("link");  //link 값을 배열에 저장
+                        getImageUrl[i] = jsonObject.getString("imageUrl");  //imageurl 값을 배열에 저장
+                        Log.i("JSON Object", jsonObject + "");
+                        Log.i("JsonParsing", getDescription[i] + "," + getLink[i] + "," + getImageUrl[i]);
+
+                    }
+
                     // Adapter 생성
                     adapter = new ListViewAdapter();
                     // 리스트뷰 참조 및 Adapter달기
                     listview = (ListView) findViewById(R.id.listview1);
-                    for (int i = 0; i < list_cnt; i++) {
-
-                        JSONObject jsonObject = array.getJSONObject(i);
-                        Log.i("JSON Object", jsonObject + "");
-                        getDescription[i] = jsonObject.getString("description");
-                        getLink[i] = jsonObject.getString("link");
-                        getImageUrl[i] = jsonObject.getString("imageUrl");
-                        Log.i("JsonParsing", getDescription[i] + "," + getLink[i] + "," + getImageUrl[i]);
-
-                    }
                     adapter.addItem(getDescription,getLink);
                     listview.setAdapter(adapter);
                     // 첫 번째 아이템 추가.
